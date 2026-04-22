@@ -78,3 +78,16 @@ def delete_done():
     conn.execute("DELETE FROM groceries WHERE status = ?", (0,))
     conn.execute("DELETE FROM notes WHERE status = ?", (0,))
     conn.commit()
+
+def delete_note(id):
+    conn.execute("DELETE FROM notes WHERE id = ?", (id,))
+    conn.commit()
+
+def delete_grocery(id):
+    conn.execute("DELETE FROM groceries WHERE id = ?", (id,))
+    conn.commit()
+
+def delete_task(id):
+    conn.execute("DELETE FROM tasks WHERE id = ?", (id,))
+    conn.commit()
+
