@@ -20,7 +20,7 @@ def set_task_done_tool(id: int) -> str:
     return "Task is done."
 
 @tool
-def remove_task(id: int) -> str:
+def remove_task_tool(id: int) -> str:
     """Remove the task with the given id."""
     db.delete_task(id)
     return "Task deleted."
@@ -44,7 +44,7 @@ def set_grocery_done_tool(id: int) -> str:
     return "Grocary is done."
 
 @tool
-def remove_grocery(id: int) -> str:
+def remove_grocery_tool(id: int) -> str:
     """Remove the grocery with the given id."""
     db.delete_grocery(id)
     return "Grocery deleted."
@@ -68,7 +68,7 @@ def set_note_done_tool(id: int) -> str:
     return "Note is done."
 
 @tool
-def remove_note(id: int) -> str:
+def remove_note_tool(id: int) -> str:
     """Remove the note with the given id."""
     db.delete_grocery(id)
     return "Note deleted."
