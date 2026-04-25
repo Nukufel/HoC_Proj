@@ -80,7 +80,7 @@ def delete_done_tool() -> str:
     db.delete_done()
     return "Deleted done elements."
 
-
+#TODO make rag  for docs and schedule image or calender api
 @tool
 def search_schedule_tool(question: str) -> str:
     """ Use this tool whenever the user asks about:
