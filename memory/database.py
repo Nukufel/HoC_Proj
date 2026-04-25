@@ -1,5 +1,7 @@
 import sqlite3
-conn = sqlite3.connect('database.db')
+conn = sqlite3.connect('memory/database.db')
+
+#TODO date, other relevant infos (name of user, style, verbosity)
 
 def init_db():
     conn.execute("""

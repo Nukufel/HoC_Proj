@@ -1,5 +1,6 @@
 from langchain.tools import tool
 import memory.database as db
+from rag import create_or_get_vector_store
 
 @tool
 def add_task_tool(text: str) -> str:
@@ -78,3 +79,23 @@ def delete_done_tool() -> str:
     """Removes all items that have been done."""
     db.delete_done()
     return "Deleted done elements."
+
+
+@tool
+def search_schedule_tool(question: str) -> str:
+    """ Use this tool whenever the user asks about:
+        - schedule
+        - timetable
+        - meetings
+        - lectures
+        - events
+        - what happens on a specific day
+        - what is planned
+
+        ALWAYS use this tool instead of answering from memory."""
+
+    docs = create_or_get_vector_store().similarity_search(question, k=4)
+
+    context = "\n\n".join(d.page_content for d in docs)
+
+    return f"Relevant schedule information:\n{context}"
