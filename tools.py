@@ -11,8 +11,11 @@ def add_task_tool(text: str) -> str:
 @tool
 def list_tasks_tool() -> str:
     """Get all tasks from the user's task list."""
-    tasks = db.get_tasks()
-    return "\n".join(tasks) if tasks else "No tasks."
+    rows = db.get_tasks()
+    text = ""
+    for row in rows:
+        text += f"{row[1]}{add_note(row[2])}\n"
+    return text if rows else "No tasks."
 
 @tool
 def set_task_done_tool(id: int) -> str:
@@ -35,8 +38,11 @@ def add_grocery_tool(text: str) -> str:
 @tool
 def list_groceries_tool() -> str:
     """Get all groceries from the user's grocery list."""
-    tasks = db.get_groceries()
-    return "\n".join(tasks) if tasks else "No groceries."
+    rows = db.get_groceries()
+    text = ""
+    for row in rows:
+        text += f"{row[2]} {row[1]}{add_note(row[3])}\n"
+    return text if rows else "No groceries."
 
 @tool
 def set_grocery_done_tool(id: int) -> str:
@@ -59,8 +65,11 @@ def add_note_tool(text: str) -> str:
 @tool
 def list_notes_tool() -> str:
     """Get all the notes from the user’s notes."""
-    tasks = db.get_notes()
-    return "\n".join(tasks) if tasks else "No tasks."
+    rows = db.get_notes()
+    text = ""
+    for row in rows:
+        text += f"{row[1]}\n"
+    return text if rows else "No notes."
 
 @tool
 def set_note_done_tool(id: int) -> str:
@@ -83,19 +92,15 @@ def delete_done_tool() -> str:
 #TODO make rag  for docs and schedule image or calender api
 @tool
 def search_schedule_tool(question: str) -> str:
-    """ Use this tool whenever the user asks about:
-        - schedule
-        - timetable
-        - meetings
-        - lectures
-        - events
-        - what happens on a specific day
-        - what is planned
-
-        ALWAYS use this tool instead of answering from memory."""
+    """Use this tool if the user asks about documents""" #TODO better description
 
     docs = create_or_get_vector_store().similarity_search(question, k=4)
 
     context = "\n\n".join(d.page_content for d in docs)
 
     return f"Relevant schedule information:\n{context}"
+
+def add_note(note: str) -> str:
+   if note == "":
+       return ""
+   return f"; Note: {note}"

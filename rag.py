@@ -8,6 +8,8 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from openai.types import VectorStore
 
+DB_PATH = "./rag_db"
+
 def get_files():
     return os.listdir("resources/")
 
@@ -23,9 +25,9 @@ def load_documents():
 def create_or_get_vector_store():
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
-    if os.path.exists("./schedule_db"):
+    if os.path.exists(DB_PATH):
         return Chroma(
-            persist_directory="./schedule_db",
+            persist_directory=DB_PATH,
             embedding_function=embeddings,
         )
 
