@@ -10,10 +10,15 @@ THREAD_ID = "1"
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-tools = [add_task_tool,
-        list_tasks_tool,
-        set_task_done_tool,
-        remove_task_tool,
+tools = [
+        add_event_tool,
+        get_today_events_tool,
+        list_all_events_tool,
+        search_event_tool,
+        delete_event_by_title_tool,
+        delete_event_by_id_tool,
+        update_user_name_tool,
+        update_user_birthdate_tool,
         add_grocery_tool,
         list_groceries_tool,
         set_grocery_done_tool,

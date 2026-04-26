@@ -1,7 +1,4 @@
 import sqlite3
-from datetime import datetime
-
-from aiohttp.hdrs import PRAGMA
 
 DB_PATH = "memory/database.db"
 
@@ -11,8 +8,6 @@ def get_connection():
         check_same_thread=False
     )
 
-#TODO date, other relevant infos (name of user, style, verbosity)
-
 def init_db():
     conn = sqlite3.connect(DB_PATH)
 
@@ -20,8 +15,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS user (
             id INTEGER PRIMARY KEY,
             name TEXT,
-            birthdate TEXT,
-            note Text
+            birthdate TEXT
         )
     """)
 
@@ -61,7 +55,6 @@ def init_db():
 
 
 # --- user functions ---
-
 def update_user_name(name):
     conn = sqlite3.connect(DB_PATH)
     conn.execute("UPDATE user SET name = ? WHERE id = ?", (name, 1))
@@ -74,18 +67,11 @@ def update_user_birthdate(birthdate):
     conn.commit()
     conn.close()
 
-def update_user_note(note):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("UPDATE user SET notes = ? WHERE id = ?", (note, 1))
-    conn.commit()
-    conn.close()
-
 
 # --- evnet functions ---
-
-def add_event(title, start_time, end_time=None):
+def add_event(title, start_time, end_time = "", location = "", description = "", status = 1):
     conn = sqlite3.connect(DB_PATH)
-    conn.execute("INSERT INTO events(title, start_time, end_time) VALUES (?, ?, ?)",(title, start_time.isoformat(), end_time.isoformat() if end_time else None),)
+    conn.execute("INSERT INTO events(title, start_time, end_time, location, description, status) VALUES (?, ?, ?, ?, ?, ?)",(title, start_time, end_time, location, description, status),)
     conn.commit()
     conn.close()
 
@@ -103,13 +89,13 @@ def get_event_by_text(search: str):
 
 def delete_event_by_text(search: str):
     conn = sqlite3.connect(DB_PATH)
-    conn.execute("DELETE FROM events WHERE title LIKE ?",(search,))
+    conn.execute("DELETE FROM events WHERE title LIKE ?",(f"%{search}%",))
     conn.commit()
     conn.close()
 
-def delete_event_by_id(event_id: int):
+def delete_event_by_id(id: int):
     conn = sqlite3.connect(DB_PATH)
-    conn.execute("DELETE FROM events WHERE id=?",(event_id,))
+    conn.execute("DELETE FROM events WHERE id=?",(id,))
     conn.commit()
     conn.close()
 
@@ -122,7 +108,6 @@ def get_all_events():
 
 
 # --- grocery functions ---
-
 def add_grocery(grocery, amount=1, notes="", status=1):
     conn = sqlite3.connect(DB_PATH)
     conn.execute("INSERT INTO groceries(grocery, amount, notes, status) VALUES (?, ?, ?, ?)", (grocery, amount, notes, status))
@@ -142,9 +127,14 @@ def update_grocery(id, status=0):
     conn.commit()
     conn.close()
 
+def delete_grocery(id):
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("DELETE FROM groceries WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
 
 # --- notes functions ---
-
 def add_note(note, status=1):
     conn = sqlite3.connect(DB_PATH)
     conn.execute("INSERT INTO notes(note, status) VALUES (?, ?)", (note, status))
@@ -164,6 +154,13 @@ def update_notes(id, status=0):
     conn.commit()
     conn.close()
 
+def delete_note(id):
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("DELETE FROM notes WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
+# --- other functions ---
 def delete_done():
     conn = sqlite3.connect(DB_PATH)
     conn.execute("DELETE FROM tasks WHERE status = ?", (0,))
@@ -172,22 +169,9 @@ def delete_done():
     conn.commit()
     conn.close()
 
-def delete_note(id):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("DELETE FROM notes WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
 
-def delete_grocery(id):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("DELETE FROM groceries WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
 
-def delete_task(id):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("DELETE FROM tasks WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
+
+
 
 init_db()

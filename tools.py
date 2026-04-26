@@ -1,34 +1,94 @@
+import datetime
+
 from langchain.tools import tool
 import memory.database as db
 from rag import create_or_get_vector_store
 
-@tool
-def add_task_tool(text: str) -> str:
-    """Add a new task to the user's task list."""
-    db.add_task(text)
-    return "Task added."
+
+# --- event tools ---
 
 @tool
-def list_tasks_tool() -> str:
-    """Get all tasks from the user's task list."""
-    rows = db.get_tasks()
-    text = ""
-    for row in rows:
-        text += f"{row[1]}{add_note(row[2])}\n"
-    return text if rows else "No tasks."
+def add_event_tool(title, start, end, location, description) -> str:
+    """
+    Add a calendar event using natural language.
+    Example:
+    'Meeting tomorrow at 10'
+    """
+
+    db.add_event(
+        title=title,
+        start_time=start,
+        end_time=end,
+        location=location,
+        description=description,
+    )
+
+    return f"Event added: {title} at {start} to {end}"
 
 @tool
-def set_task_done_tool(id: int) -> str:
-    """Set the stat of a specific task to 'done'."""
-    db.update_task(id)
-    return "Task is done."
+def get_today_events_tool() -> str:
+    """Get all events scheduled for today."""
+    start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    end = start + datetime.timedelta(days=1)
+
+    events = db.get_events_between(start, end)
+
+    if not events:
+        return "No events today."
+    return events
 
 @tool
-def remove_task_tool(id: int) -> str:
-    """Remove the task with the given id."""
-    db.delete_task(id)
-    return "Task deleted."
+def list_all_events_tool() -> str:
+    """List all calendar events."""
+    events = db.get_all_events()
 
+    if not events:
+        return "No events stored."
+    return events
+
+
+@tool
+def search_event_tool(text: str) -> str:
+    """Search calendar events by description."""
+    events = db.get_event_by_text(text)
+
+    if not events:
+        return "No matching events."
+    return events
+
+@tool
+def delete_event_by_title_tool(title: str) -> str:
+    """
+    Delete events with matching titles.
+    Example:
+    'delete gym'
+    'cancel meeting'
+    """
+    db.delete_event_by_text(title)
+    return f"Deleted events matching '{title}'."
+
+@tool
+def delete_event_by_id_tool(id: int) -> str:
+    """Delete event using its id."""
+    db.delete_event_by_id(id)
+    return f"Event {id} deleted."
+
+
+# --- user tools ---
+@tool
+def update_user_name_tool(name: str):
+    """Update the user's name."""
+    db.update_user_name(name)
+    return "Name updated"
+
+@tool
+def update_user_birthdate_tool(name: str):
+    """Update the user's birthdate."""
+    db.update_user_name(name)
+    return "Name updated"
+
+
+# --- grocery tools ---
 @tool
 def add_grocery_tool(text: str) -> str:
     """Add a new grocery item to the user's groceries list."""
@@ -56,6 +116,7 @@ def remove_grocery_tool(id: int) -> str:
     db.delete_grocery(id)
     return "Grocery deleted."
 
+# --- note tools ---
 @tool
 def add_note_tool(text: str) -> str:
     """Add a new note to the user's notes."""
@@ -88,6 +149,8 @@ def delete_done_tool() -> str:
     """Removes all items that have been done."""
     db.delete_done()
     return "Deleted done elements."
+
+
 
 #TODO make rag  for docs and schedule image or calender api
 @tool
