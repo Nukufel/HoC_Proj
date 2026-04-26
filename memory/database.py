@@ -45,11 +45,11 @@ def add_task(task, notes="", status=1):
 
 def get_tasks():
     conn = sqlite3.connect(DB_PATH)
-    tasks = []
+    items = []
     rows = conn.execute("SELECT * FROM tasks WHERE status = ?", (1,))
-    for task in rows:
-        tasks.append(task)
-    return tasks
+    for row in rows:
+        items.append(row)
+    return items
 
 def update_task(id, status=0):
     conn = sqlite3.connect(DB_PATH)
@@ -63,11 +63,11 @@ def add_grocery(grocery, amount=1, notes="", status=1):
 
 def get_groceries():
     conn = sqlite3.connect(DB_PATH)
-    tasks = []
+    items = []
     rows = conn.execute("SELECT * FROM groceries WHERE status = ?", (1,))
-    for task in rows:
-        tasks.append(task)
-    return tasks
+    for row in rows:
+        items.append(row)
+    return items
 
 def update_grocery(id, status=0):
     conn = sqlite3.connect(DB_PATH)
@@ -81,11 +81,11 @@ def add_note(note, status=1):
 
 def get_notes():
     conn = sqlite3.connect(DB_PATH)
-    tasks = []
+    items = []
     rows = conn.execute("SELECT * FROM notes WHERE status = ?", (1,))
-    for task in rows:
-        tasks.append(task)
-    return tasks
+    for row in rows:
+        items.append(row)
+    return items
 
 def update_notes(id, status=0):
     conn = sqlite3.connect(DB_PATH)

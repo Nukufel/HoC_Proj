@@ -41,12 +41,13 @@ If the user wants to remove an item use a tool and remove it.
 If the user wants to store something, use a tool and store it..
 If the user asks about schedule, use search_schedule_tool.
 If the user asks about anything where the schedule could be relevant, inform the user.
+
 """)
 
 #middelware ... TODO
 
 model =  ChatOpenAI(model="gpt-4o-mini", temperature=0.1, max_tokens=1000)
-agent = create_agent(model=model, tools=[search_schedule_tool], system_prompt=system_message ,checkpointer=InMemorySaver())
+agent = create_agent(model=model, tools=tools, system_prompt=system_message ,checkpointer=InMemorySaver())
 
 def invoke_agent(user_message: str) -> dict[str, Any]:
     human_message = HumanMessage(user_message)
