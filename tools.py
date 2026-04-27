@@ -29,29 +29,19 @@ def get_today_events_tool() -> str:
     """Get all events scheduled for today."""
     start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end = start + datetime.timedelta(days=1)
-
     events = db.get_events_between(start, end)
-
-    if not events:
-        return "No events today."
     return events
 
 @tool
 def list_all_events_tool() -> str:
     """List all calendar events."""
     events = db.get_all_events()
-
-    if not events:
-        return "No events stored."
     return events
 
 @tool
 def search_event_tool(text: str) -> str:
     """Search calendar events by description."""
     events = db.get_event_by_text(text)
-
-    if not events:
-        return "No matching events."
     return events
 
 @tool
@@ -74,6 +64,12 @@ def update_user_birthdate_tool(name: str):
     db.update_user_name(name)
     return "Name updated"
 
+@tool
+def get_user_tool():
+    """Get user info."""
+    user = db.get_user()
+    return user
+
 
 # --- grocery tools ---
 @tool
@@ -86,10 +82,7 @@ def add_grocery_tool(text: str) -> str:
 def list_groceries_tool() -> str:
     """Get all groceries from the user's grocery list."""
     rows = db.get_groceries()
-    text = ""
-    for row in rows:
-        text += f"{row[2]} {row[1]}{add_note(row[3])}\n"
-    return text if rows else "No groceries."
+    return rows
 
 @tool
 def set_grocery_done_tool(id: int) -> str:
@@ -114,10 +107,7 @@ def add_note_tool(text: str) -> str:
 def list_notes_tool() -> str:
     """Get all the notes from the user’s notes."""
     rows = db.get_notes()
-    text = ""
-    for row in rows:
-        text += f"{row[1]}\n"
-    return text if rows else "No notes."
+    return rows
 
 @tool
 def set_note_done_tool(id: int) -> str:
@@ -143,11 +133,8 @@ def delete_done_tool() -> str:
 @tool
 def search_schedule_tool(question: str) -> str:
     """Use this tool if the user asks about documents""" #TODO better description
-
     docs = create_or_get_vector_store().similarity_search(question, k=4)
-
     context = "\n\n".join(d.page_content for d in docs)
-
     return f"Relevant schedule information:\n{context}"
 
 def add_note(note: str) -> str:

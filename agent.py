@@ -15,7 +15,6 @@ tools = [
         get_today_events_tool,
         list_all_events_tool,
         search_event_tool,
-        delete_event_by_title_tool,
         delete_event_by_id_tool,
         update_user_name_tool,
         update_user_birthdate_tool,
@@ -39,6 +38,10 @@ You can:
 - manage groceries
 - manage notes
 - answer questions about the schedule
+
+You may call multiple tools sequentially.
+If information is missing, use tools to retrieve it first.
+Never guess event IDs or IDs in general.
 
 Always use tools when needed.
 If there is an item that makes sens to remember, use a tool and store it.
