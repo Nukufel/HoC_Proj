@@ -6,7 +6,6 @@ from rag import create_or_get_vector_store
 
 
 # --- event tools ---
-
 @tool
 def add_event_tool(title, start, end, location, description) -> str:
     """
@@ -46,7 +45,6 @@ def list_all_events_tool() -> str:
         return "No events stored."
     return events
 
-
 @tool
 def search_event_tool(text: str) -> str:
     """Search calendar events by description."""
@@ -55,17 +53,6 @@ def search_event_tool(text: str) -> str:
     if not events:
         return "No matching events."
     return events
-
-@tool
-def delete_event_by_title_tool(title: str) -> str:
-    """
-    Delete events with matching titles.
-    Example:
-    'delete gym'
-    'cancel meeting'
-    """
-    db.delete_event_by_text(title)
-    return f"Deleted events matching '{title}'."
 
 @tool
 def delete_event_by_id_tool(id: int) -> str:

@@ -87,9 +87,9 @@ def get_event_by_text(search: str):
     conn.commit()
     conn.close()
 
-def delete_event_by_text(search: str):
+def get_event_by_id(id: int):
     conn = sqlite3.connect(DB_PATH)
-    conn.execute("DELETE FROM events WHERE title LIKE ?",(f"%{search}%",))
+    conn.execute("SELECT * FROM events WHERE id = ?", (id,))
     conn.commit()
     conn.close()
 
