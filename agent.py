@@ -8,23 +8,13 @@ from langchain.agents import create_agent
 from langchain.agents.middleware.summarization import SummarizationMiddleware
 from langchain.agents.middleware import AgentMiddleware
 import datetime
+from dateparser.search import search_dates
+
 
 RAG = RAG()
+
+
 THREAD_ID = "1"
-
-class DateTimeMiddleware(AgentMiddleware):
-
-    def before_model(self, state, config):
-        now = datetime.datetime.now()
-
-        datetime_message = SystemMessage(
-            content=f"Current datetime: {now.strftime('%Y-%m-%d %H:%M:%S %Z')}"
-        )
-
-        state["messages"] = [datetime_message] + state["messages"]
-
-        return state
-
 
 class RAGMiddleware(AgentMiddleware):
 
@@ -52,6 +42,19 @@ class RAGMiddleware(AgentMiddleware):
 
         return state
 
+def sanitize_dates(text: str) -> str:
+    results = search_dates(text, settings={"PREFER_DATES_FROM": "future", "RETURN_AS_TIMEZONE_AWARE": False})
+    if not results:
+        return text
+    for date_string, date_obj in results:
+        text = text.replace(date_string, date_obj.strftime("%Y-%m-%d %H:%M"), 1)
+    print(text)
+    return text
+
+def get_current_datetime() -> str:
+    now = datetime.datetime.now()
+    return f"Current datetime: {now.strftime('%Y-%m-%d %H:%M:%S %Z')}"
+
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
@@ -74,7 +77,7 @@ TOOLS = [
         ]
 
 
-SYSTEM_MESSAGE = SystemMessage("""
+SYSTEM_PROMPT = SystemMessage("""
 You are a personal assistant. Be concise and accurate.
 
 You can:
@@ -109,22 +112,24 @@ summarizer = SummarizationMiddleware(
     trigger=[("tokens", 2000)]
 )
 
-datetimeMiddleware = DateTimeMiddleware()
 ragMiddleware = RAGMiddleware()
 
 MIDDLEWARES = [
     summarizer,
-    datetimeMiddleware,
     ragMiddleware,
 ]
 
+agent = create_agent(model=model, tools=TOOLS, system_prompt=SYSTEM_PROMPT, middleware=MIDDLEWARES, checkpointer=InMemorySaver())
 
-agent = create_agent(model=model, tools=TOOLS, system_prompt=SYSTEM_MESSAGE, middleware=MIDDLEWARES, checkpointer=InMemorySaver())
+def invoke_agent(user_message: str, use_rag: bool = False, context: str = None) -> dict[str, Any]:
+    messages = []
 
-def invoke_agent(user_message: str, use_rag: bool = False) -> dict[str, Any]:
-    human_message = HumanMessage(user_message)
+    messages.append(SystemMessage(get_current_datetime()))
+    if context: messages.append(SystemMessage(context))
+    messages.append(HumanMessage(sanitize_dates(user_message)))
+
     result = agent.invoke(
-        {"messages": [human_message]},
+        {"messages": messages},
         {"configurable": {"thread_id": THREAD_ID, "use_rag": use_rag}},
     )
     return result
