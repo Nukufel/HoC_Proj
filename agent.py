@@ -1,6 +1,5 @@
-import datetime
 from typing import Any
-
+from rag import RAG
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from tools import *
@@ -10,7 +9,7 @@ from langchain.agents.middleware.summarization import SummarizationMiddleware
 from langchain.agents.middleware import AgentMiddleware
 import datetime
 
-
+RAG = RAG()
 THREAD_ID = "1"
 
 class DateTimeMiddleware(AgentMiddleware):
@@ -25,6 +24,34 @@ class DateTimeMiddleware(AgentMiddleware):
         state["messages"] = [datetime_message] + state["messages"]
 
         return state
+
+
+class RAGMiddleware(AgentMiddleware):
+
+    def before_model(self, state, config):
+        if not config.get("configurable", {}).get("use_rag"):
+            return state
+
+        query = next(
+            (m.content for m in reversed(state["messages"]) if isinstance(m, HumanMessage)),
+            None,
+        )
+        if not query:
+            return state
+
+        rag_result = RAG.search(query)
+        if rag_result:
+            rag_message = SystemMessage(
+                content=(
+                    f"The following was retrieved from the user's uploaded documents "
+                    f"and is relevant to the question. Use this to answer accurately.\n\n"
+                    f"DOCUMENT CONTEXT: \n{rag_result}\n END CONTEXT \n\n"
+                )
+            )
+            state["messages"] = [rag_message] + state["messages"]
+
+        return state
+
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
@@ -44,7 +71,6 @@ TOOLS = [
         set_note_done_tool,
         remove_note_tool,
         delete_done_tool,
-        search_documents_tool,
         ]
 
 
@@ -84,19 +110,21 @@ summarizer = SummarizationMiddleware(
 )
 
 datetimeMiddleware = DateTimeMiddleware()
+ragMiddleware = RAGMiddleware()
 
 MIDDLEWARES = [
     summarizer,
     datetimeMiddleware,
+    ragMiddleware,
 ]
 
 
 agent = create_agent(model=model, tools=TOOLS, system_prompt=SYSTEM_MESSAGE, middleware=MIDDLEWARES, checkpointer=InMemorySaver())
 
-def invoke_agent(user_message: str) -> dict[str, Any]:
+def invoke_agent(user_message: str, use_rag: bool = False) -> dict[str, Any]:
     human_message = HumanMessage(user_message)
     result = agent.invoke(
         {"messages": [human_message]},
-        {"configurable": {"thread_id": THREAD_ID}},
+        {"configurable": {"thread_id": THREAD_ID, "use_rag": use_rag}},
     )
     return result

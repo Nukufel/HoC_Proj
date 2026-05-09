@@ -10,7 +10,6 @@ from langchain_core.documents import Document
 DB_PATH = "./rag_db"
 RESOURCES_DIR = "resources/"
 
-
 class RAG:
     def __init__(self):
         self._splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=50)
@@ -42,5 +41,3 @@ class RAG:
         docs = self._store.similarity_search(question)
         return "\n".join([d.page_content for d in docs])
 
-
-# Hallo Niki
