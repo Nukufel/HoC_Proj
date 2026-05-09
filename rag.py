@@ -6,38 +6,41 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from openai.types import VectorStore
 
 DB_PATH = "./rag_db"
+RESOURCES_DIR = "resources/"
 
-def get_files():
-    return os.listdir("resources/")
 
-def load_documents():
-    pages: List[Document] = []
+class RAG:
+    def __init__(self):
+        self._splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=50)
+        embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+        self._store = Chroma(persist_directory=DB_PATH, embedding_function=embeddings)
+        self._index_new_files()
 
-    for file in get_files():
-        loader = PyPDFLoader(file_path=f"resources/{file}")
-        pages.extend(loader.load())
-
-    return pages
-
-def create_or_get_vector_store():
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-
-    if os.path.exists(DB_PATH):
-        return Chroma(
-            persist_directory=DB_PATH,
-            embedding_function=embeddings,
+    def _index_new_files(self):
+        indexed = set(
+            m["source"]
+            for m in self._store.get(include=["metadatas"])["metadatas"]
+            if m and "source" in m
         )
 
-    pages = load_documents()
-    splitter = RecursiveCharacterTextSplitter(chunk_size=50, chunk_overlap=25)
-    chunks = splitter.split_documents(pages)
+        pages: List[Document] = []
+        for file in os.listdir(RESOURCES_DIR):
+            path = f"{RESOURCES_DIR}{file}"
+            if path not in indexed:
+                pages.extend(PyPDFLoader(file_path=path).load())
 
-    vector_store = Chroma.from_documents(documents=chunks, embedding=embeddings, persist_directory="./schedule_db")
-    return vector_store
+        if pages:
+            self._store.add_documents(self._splitter.split_documents(pages))
 
-def search_schedule(vector_store: VectorStore, question: str):
-    docs = vector_store.similarity_search(question)
-    return "\n".join([d.page_content for d in docs])
+    def add_pdf(self, file_path: str):
+        pages = PyPDFLoader(file_path=file_path).load()
+        self._store.add_documents(self._splitter.split_documents(pages))
+
+    def search(self, question: str) -> str:
+        docs = self._store.similarity_search(question)
+        return "\n".join([d.page_content for d in docs])
+
+
+# Hallo Niki

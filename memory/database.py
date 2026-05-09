@@ -1,7 +1,9 @@
 import sqlite3
 from contextlib import contextmanager
 
-DB_PATH = "database.db"
+DB_PATH = "memory/database.db"
+
+#TODO handle reacurrance of vents
 
 def get_connection():
     return sqlite3.connect(
@@ -49,6 +51,8 @@ def init_db():
             )      
         """)
 
+        conn.execute("INSERT OR IGNORE INTO user (id, name, birthdate) VALUES (1, '', '')")
+
 
 # --- user functions ---
 def create_user():
@@ -65,8 +69,7 @@ def update_user_birthdate(birthdate):
 
 def get_user():
     with get_db() as conn:
-        res =conn.execute("SELECT * FROM user").fetchall()
-    return res
+        return conn.execute("SELECT * FROM user").fetchall()
 
 
 # --- evnet functions ---
@@ -76,16 +79,16 @@ def add_event(title, start_time, end_time = "", location = "", description = "",
 
 def get_events_between(start, end):
     with get_db() as conn:
-        conn.execute("SELECT * FROM events WHERE start_time BETWEEN ? AND ?",(start.isoformat(), end.isoformat()),)
-    return conn
+        return conn.execute("SELECT * FROM events WHERE start_time BETWEEN ? AND ?",(start.isoformat(), end.isoformat()),).fetchall()
+
 
 def get_event_by_text(search: str):
     with get_db() as conn:
-        conn.execute("SELECT * FROM events WHERE title LIKE ?",(f"%{search}%",))
+        return conn.execute("SELECT * FROM events WHERE title LIKE ?",(f"%{search}%",)).fetchall()
 
 def get_event_by_id(id: int):
     with get_db() as conn:
-        conn.execute("SELECT * FROM events WHERE id = ?", (id,))
+        return conn.execute("SELECT * FROM events WHERE id = ?", (id,)).fetchall()
 
 def delete_event_by_id(id: int):
     with get_db() as conn:
@@ -93,8 +96,7 @@ def delete_event_by_id(id: int):
 
 def get_all_events():
     with get_db() as conn:
-        res = conn.execute("SELECT * FROM events").fetchall()
-    return res
+        return conn.execute("SELECT * FROM events").fetchall()
 
 
 # --- grocery functions ---
@@ -105,8 +107,7 @@ def add_grocery(grocery, amount=1, notes="", status=1):
 
 def get_groceries():
     with get_db() as conn:
-        res = conn.execute("SELECT * FROM groceries WHERE status = ?", (1,)).fetchall()
-    return res
+        return conn.execute("SELECT * FROM groceries WHERE status = ?", (1,)).fetchall()
 
 def update_grocery(id, status=0):
     with get_db() as conn:
@@ -124,8 +125,8 @@ def add_note(note, status=1):
 
 def get_notes():
     with get_db() as conn:
-        res = conn.execute("SELECT * FROM notes WHERE status = ?", (1,)).fetchall()
-    return res
+        return conn.execute("SELECT * FROM notes WHERE status = ?", (1,)).fetchall()
+
 def update_notes(id, status=0):
     with get_db() as conn:
         conn.execute("UPDATE notes SET status = ? WHERE id = ?", (status, id))
@@ -138,7 +139,6 @@ def delete_note(id):
 # --- other functions ---
 def delete_done():
     with get_db() as conn:
-        conn.execute("DELETE FROM tasks WHERE status = ?", (0,))
         conn.execute("DELETE FROM groceries WHERE status = ?", (0,))
         conn.execute("DELETE FROM notes WHERE status = ?", (0,))
 
@@ -161,4 +161,3 @@ def get_db():
         conn.close()
 
 init_db()
-print(get_user())
