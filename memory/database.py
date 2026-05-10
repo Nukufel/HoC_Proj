@@ -37,7 +37,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS groceries (
                 id INTEGER PRIMARY KEY,
                 grocery TEXT,
-                amount INTEGER,
+                amount TEXT,
                 notes TEXT,
                 status INTEGER
             )
@@ -75,7 +75,10 @@ def get_user():
 # --- evnet functions ---
 def add_event(title, start_time, end_time = "", location = "", description = "", status = 1):
     with get_db() as conn:
-        conn.execute("INSERT INTO events(title, start_time, end_time, location, description, status) VALUES (?, ?, ?, ?, ?, ?)",(title, start_time, end_time, location, description, status),)
+        conn.execute(
+            "INSERT INTO events(title, start_time, end_time, location, description, status) VALUES (?, ?, ?, ?, ?, ?)",
+            (title, start_time, end_time, location, description, status)
+        )
 
 def get_events_between(start, end):
     with get_db() as conn:
@@ -100,7 +103,7 @@ def get_all_events():
 
 
 # --- grocery functions ---
-def add_grocery(grocery, amount=1, notes="", status=1):
+def add_grocery(grocery, amount="1", notes="", status=1):
     with get_db() as conn:
         conn.execute("INSERT INTO groceries(grocery, amount, notes, status) VALUES (?, ?, ?, ?)", (grocery, amount, notes, status))
 

@@ -24,7 +24,7 @@ def add_event_tool(title: str, start: str, end: str, location: str, description:
             Examples: "2026-05-12T09:00:00", "2026-06-01T00:00:00"
         end: End datetime in ISO 8601 format, or "" if unknown.
             Examples: "2026-05-12T10:30:00", ""
-        location: Where the event takes place, or "" if not mentioned.
+        location: Where the event takes pla  ce, or "" if not mentioned.
             Examples: "Room 4B", "Zurich HB", ""
         description: Extra context, notes, or remarks, or "" if none.
             Examples: "Bring ID card", "Zoom link: meet.example.com", ""
@@ -81,13 +81,13 @@ def delete_event_by_id_tool(id: int) -> str:
 
 @tool
 def update_user_name_tool(name: str) -> str:
-    """Store or update the user's name in their profile.
+    """
+    Store or update the user's name in their profile.
 
-    Use the first time the user mentions their name, or when they correct it.
+    Use when the user mentions their name, or when they correct it.
 
     Args:
         name: The user's full name or preferred display name.
-            Examples: "Anna", "Max Müller", "AJ"
 
     Returns:
         Confirmation string with the stored name.
@@ -129,26 +129,26 @@ def get_user_tool() -> str:
 # Grocery tools
 
 @tool
-def add_grocery_tool(text: str) -> str:
-    """Add a single item to the user's grocery / shopping list.
+def add_grocery_tool(text: str, amount: str = "1") -> str:
+    """Add a single grocery item to the user's grocery / shopping list.
 
     Use when the user wants to remember to buy something.
     Call once per distinct item — do NOT combine multiple items into one call.
 
     Args:
         text: The grocery item, optionally with quantity or brand.
-            Examples: "milk", "2 kg potatoes", "organic oat milk"
+        amount: The amount of an item.
 
     Returns:
         Confirmation that the item was added.
     """
-    db.add_grocery(text)
+    db.add_grocery(text, amount=amount)
     return f"'{text}' added to groceries."
 
 
 @tool
 def list_groceries_tool() -> str:
-    """Return all active (not yet purchased) items on the grocery list.
+    """Return all items on the grocery list.
 
     Use when the user asks what's on their shopping list, or when you need
     an item's ID before marking it done or deleting it.
@@ -210,15 +210,12 @@ def add_note_tool(text: str) -> str:
     Args:
         text: Full content of the note. Be specific so the note is
             self-contained when read back later.
-            Examples: "Call insurance about the claim",
-                      "Read chapter 4 before Thursday",
-                      "Gym locker code: 1842"
 
     Returns:
         Confirmation that the note was saved.
     """
     db.add_note(text)
-    return f"Note saved: '{text}'."
+    return f"Note saved."
 
 
 @tool

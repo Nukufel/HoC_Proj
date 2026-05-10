@@ -38,6 +38,6 @@ class RAG:
         self._store.add_documents(self._splitter.split_documents(pages))
 
     def search(self, question: str) -> str:
-        docs = self._store.similarity_search(question)
+        docs = self._store.similarity_search(question, k=4)
         return "\n".join([d.page_content for d in docs])
 

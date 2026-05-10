@@ -47,7 +47,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("Image received, analyzing...")
 
     vision_response = image_model.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5-nano",
         messages=[{
             "role": "user",
             "content": [
@@ -65,14 +65,13 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 },
             ],
         }],
-        max_tokens=1000,
     )
 
     extracted = vision_response.choices[0].message.content
     print(f"Vision extracted: {extracted}")
 
     result = invoke_agent(
-        "Please store the relevant information from the image.",
+        "Please store the relevant information from the image with the corresponding tool. Add evry item separately",
         context=f"Image analysis result:\n{extracted}",
     )
     reply = result["messages"][-1].content
@@ -84,7 +83,7 @@ async def handle_fs_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = " ".join(context.args).strip()
 
     if not query:
-        await update.message.reply_text("Please provide a question. Example: /fs what is XSS?")
+        await update.message.reply_text("Please provide a question.")
         return
 
     print(f"User [/fs]: {query}")

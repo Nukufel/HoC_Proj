@@ -7,12 +7,12 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents import create_agent
 from langchain.agents.middleware.summarization import SummarizationMiddleware
 from langchain.agents.middleware import AgentMiddleware
-import datetime
+from datetime import datetime
 from dateparser.search import search_dates
 
 
 RAG = RAG()
-
+DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 THREAD_ID = "1"
 
@@ -48,15 +48,12 @@ def sanitize_dates(text: str) -> str:
         return text
     for date_string, date_obj in results:
         text = text.replace(date_string, date_obj.strftime("%Y-%m-%d %H:%M"), 1)
-    print(text)
     return text
 
 def get_current_datetime() -> str:
-    now = datetime.datetime.now()
-    return f"Current datetime: {now.strftime('%Y-%m-%d %H:%M:%S %Z')}"
+    now = datetime.now()
+    return f"Current datetime: {DAYS[now.weekday()]} the {now}"
 
-
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 TOOLS = [
         add_event_tool,
@@ -78,38 +75,35 @@ TOOLS = [
 
 
 SYSTEM_PROMPT = SystemMessage("""
-You are a personal assistant. Be concise and accurate.
+You are a personal assistant that helps the user manage their daily life.
+Be concise and friendly.
+You are ment to store and provide information.
+Do not ask followup questions.
+Do not provide unnecessary information.
 
-You can:
-- manage tasks
-- manage groceries
-- manage notes
-- answer questions about the schedule
+## Capabilities
+- **Calendar**: add, list, and delete events (meetings, appointments, lectures, deadlines)
+- **Groceries**: add, list, mark done, and remove items from the shopping list
+- **Notes**: save, list, mark done, and delete notes, reminders, and to-dos
+- **Profile**: store and retrieve the user's name and birthdate
 
-If you don't have the information to answer a question, use tools to retrieve it first.
-If the user requests information, use tools to retrieve it.
-You may call multiple tools sequentially.
-Never guess event IDs or IDs in general.
-
-
-Always use tools when needed.
-Rules:
-- When using a tool read the description of the tools first to determine the right tool to use.
-- If you don't have some information inform the user about that.
-- If the user asks about his persona information use the get_user_tool.
-- If there is an item that makes sens to remember, use a tool and store it.
-- If the user wants to remove an item use a tool and remove it.
-- If the user wants to store something, use a tool and store it.
-- If the user asks about anything where the schedule could be relevant, use a tool and infor him.
-- If the user talks about an event use a tool and store the evet in his events.
-- If a tool does not retrieve the requested information use a different tool or tell the user the information is missing.
+## Tool rules
+- If somthing is unclear ask the user.
+- Always call a tool to retrieve data before answering questions about it — never guess.
+- To delete or update any item, first call the relevant list/get tool to find the correct ID.
+- Never invent or assume an ID.
+- If the user mentions their name or birthdate, save it immediately with the appropriate tool.
+- If the user describes an upcoming event, save it immediately with add_event_tool.
+- If something belongs on the grocery list or in notes, save it proactively without being asked.
+- If a tool returns no data, tell the user — do not fabricate information.
+- You may call multiple tools in sequence to complete a single request.
 """)
 
-model =  ChatOpenAI(model="gpt-4o-mini", temperature=0.1, max_tokens=3000)
+model =  ChatOpenAI(model="gpt-4o-mini", temperature=0.1, max_tokens=5000)
 
 summarizer = SummarizationMiddleware(
     model=model,
-    trigger=[("tokens", 2000)]
+    trigger=[("messages", 20),("tokens", 4000)]
 )
 
 ragMiddleware = RAGMiddleware()
