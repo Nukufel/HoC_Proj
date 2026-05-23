@@ -7,8 +7,8 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
-DB_PATH = "./rag_db"
-RESOURCES_DIR = "resources/"
+DB_PATH = ""
+RESOURCES_DIR = "../resources/"
 
 class RAG:
     def __init__(self):
