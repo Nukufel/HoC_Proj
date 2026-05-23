@@ -1,5 +1,5 @@
 from typing import Any
-from rag_db.rag import RAG
+from rag.rag import RAG
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from tools import *
