@@ -7,8 +7,8 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
-DB_PATH = ""
-RESOURCES_DIR = "../resources/"
+DB_PATH = os.path.dirname(os.path.abspath(__file__))
+RESOURCES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "resources")
 
 class RAG:
     def __init__(self):
@@ -26,7 +26,7 @@ class RAG:
 
         pages: List[Document] = []
         for file in os.listdir(RESOURCES_DIR):
-            path = f"{RESOURCES_DIR}{file}"
+            path = os.path.join(RESOURCES_DIR, file)
             if path not in indexed:
                 pages.extend(PyPDFLoader(file_path=path).load())
 
