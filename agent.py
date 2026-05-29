@@ -1,46 +1,24 @@
 from typing import Any
-from rag.rag import RAG
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from tools import *
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents import create_agent
 from langchain.agents.middleware.summarization import SummarizationMiddleware
+from langchain.agents.middleware import ModelCallLimitMiddleware, before_model
 from langchain.agents.middleware import AgentMiddleware
 from datetime import datetime
 from dateparser.search import search_dates
+from memory.database import update_reoccurring_events
 
 
-RAG = RAG()
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 THREAD_ID = "1"
 
-class RAGMiddleware(AgentMiddleware):
-
-    def before_model(self, state, config):
-        if not config.get("configurable", {}).get("use_rag"):
-            return state
-
-        query = next(
-            (m.content for m in reversed(state["messages"]) if isinstance(m, HumanMessage)),
-            None,
-        )
-        if not query:
-            return state
-
-        rag_result = RAG.search(query)
-        if rag_result:
-            rag_message = SystemMessage(
-                content=(
-                    f"The following was retrieved from the user's uploaded documents "
-                    f"and is relevant to the question. Use this to answer accurately.\n\n"
-                    f"DOCUMENT CONTEXT: \n{rag_result}\n END CONTEXT \n\n"
-                )
-            )
-            state["messages"] = [rag_message] + state["messages"]
-
-        return state
+@before_model
+def advance_date():
+    update_reoccurring_events()
 
 def sanitize_dates(text: str) -> str:
     results = search_dates(text, settings={"PREFER_DATES_FROM": "future", "RETURN_AS_TIMEZONE_AWARE": False})
@@ -101,16 +79,13 @@ Do not provide unnecessary information.
 
 model =  ChatOpenAI(model="gpt-4o-mini", temperature=0.1, max_tokens=5000)
 
-summarizer = SummarizationMiddleware(
-    model=model,
-    trigger=[("messages", 20),("tokens", 4000)]
-)
-
-ragMiddleware = RAGMiddleware()
+summarizer = SummarizationMiddleware(model=model, trigger=[("messages", 20),("tokens", 4000)])
+callLimit = ModelCallLimitMiddleware(thread_limit=20, run_limit=10)
 
 MIDDLEWARES = [
     summarizer,
-    ragMiddleware,
+    advance_date,
+    callLimit,
 ]
 
 agent = create_agent(model=model, tools=TOOLS, system_prompt=SYSTEM_PROMPT, middleware=MIDDLEWARES, checkpointer=InMemorySaver())

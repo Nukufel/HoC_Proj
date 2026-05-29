@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from agent import invoke_agent, RAG
+from agent import invoke_agent
 from image_handler import ImageHandler
 from telegram import Update
 from telegram.ext import Application, MessageHandler, ContextTypes, filters, CommandHandler
