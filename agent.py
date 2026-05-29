@@ -5,8 +5,7 @@ from tools import *
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents import create_agent
 from langchain.agents.middleware.summarization import SummarizationMiddleware
-from langchain.agents.middleware import ModelCallLimitMiddleware, before_model
-from langchain.agents.middleware import AgentMiddleware
+from langchain.agents.middleware import ModelCallLimitMiddleware, before_model, PIIMiddleware
 from datetime import datetime
 from dateparser.search import search_dates
 from memory.database import update_reoccurring_events
@@ -81,11 +80,13 @@ model =  ChatOpenAI(model="gpt-4o-mini", temperature=0.1, max_tokens=5000)
 
 summarizer = SummarizationMiddleware(model=model, trigger=[("messages", 20),("tokens", 4000)])
 callLimit = ModelCallLimitMiddleware(thread_limit=20, run_limit=10)
+guard = PIIMiddleware("api_key", detector=r"sk-[a-zA-Z0-9]{32}", strategy="block", apply_to_input=True)
 
 MIDDLEWARES = [
     summarizer,
     advance_date,
     callLimit,
+    guard,
 ]
 
 agent = create_agent(model=model, tools=TOOLS, system_prompt=SYSTEM_PROMPT, middleware=MIDDLEWARES, checkpointer=InMemorySaver())
