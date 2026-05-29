@@ -1,9 +1,8 @@
 import sqlite3
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 
 DB_PATH = "memory/database.db"
-
-#TODO handle reacurrance of vents
 
 def get_connection():
     return sqlite3.connect(
@@ -25,11 +24,11 @@ def init_db():
             CREATE TABLE IF NOT EXISTS events (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
-                start_time TEXT NOT NULL,
-                end_time TEXT,
+                start_time  NOT NULL,
+                duration FLOAT,
                 location TEXT,
                 description TEXT,
-                status INTEGER
+                reoccurring INTEGER
             )
         """)
 
@@ -72,12 +71,21 @@ def get_user():
         return conn.execute("SELECT * FROM user").fetchall()
 
 
-# --- evnet functions ---
-def add_event(title, start_time, end_time = "", location = "", description = "", status = 1):
+# --- event functions ---
+def update_reoccurring_events():
+    with get_db() as conn:
+        now = datetime.now().isoformat()
+        events = conn.execute("SELECT id, start_time FROM events WHERE reoccurring = 1 AND start_time < ?",(now,)).fetchall()
+        for event in events:
+            new_start = (datetime.fromisoformat(event['start_time']) + timedelta(days=7)).isoformat()
+            conn.execute("UPDATE events SET start_time = ? WHERE id = ?",(new_start, event['id']))
+
+
+def add_event(title, start_time, duration=1.0, location="", description="", reoccurring=0):
     with get_db() as conn:
         conn.execute(
-            "INSERT INTO events(title, start_time, end_time, location, description, status) VALUES (?, ?, ?, ?, ?, ?)",
-            (title, start_time, end_time, location, description, status)
+            "INSERT INTO events(title, start_time, duration, location, description, reoccurring) VALUES (?, ?, ?, ?, ?, ?)",
+            (title, start_time, duration, location, description, reoccurring)
         )
 
 def get_events_between(start, end):

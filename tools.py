@@ -8,7 +8,7 @@ import memory.database as db
 # Event tools
 
 @tool
-def add_event_tool(title: str, start: str, end: str, location: str, description: str) -> str:
+def add_event_tool(title: str, start: str, duration: float, location: str, description: str) -> str:
     """Save a new calendar event to the database.
 
     Use whenever the user schedules, books, or mentions an upcoming event —
@@ -22,9 +22,9 @@ def add_event_tool(title: str, start: str, end: str, location: str, description:
             If the user gives only a date use "T00:00:00" for the time.
             If only a time is given and the user says "today", use today's date.
             Examples: "2026-05-12T09:00:00", "2026-06-01T00:00:00"
-        end: End datetime in ISO 8601 format, or "" if unknown.
-            Examples: "2026-05-12T10:30:00", ""
-        location: Where the event takes pla  ce, or "" if not mentioned.
+        duration: Duration of an event in hours. if unknown = 1.0.
+            Examples: "1.0", "2.5"
+        location: Where the event takes place, or "" if not mentioned.
             Examples: "Room 4B", "Zurich HB", ""
         description: Extra context, notes, or remarks, or "" if none.
             Examples: "Bring ID card", "Zoom link: meet.example.com", ""
@@ -35,11 +35,11 @@ def add_event_tool(title: str, start: str, end: str, location: str, description:
     db.add_event(
         title=title,
         start_time=start,
-        end_time=end,
+        duration=duration,
         location=location,
         description=description,
     )
-    return f"Event added: '{title}' from {start} to {end or 'open end'}."
+    return f"Event added: '{title}' starting at {start}, duration {duration}h."
 
 
 @tool
