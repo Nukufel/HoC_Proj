@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from langchain.tools import tool
 import memory.database as db
