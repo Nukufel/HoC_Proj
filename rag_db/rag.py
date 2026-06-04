@@ -8,20 +8,27 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
 DB_PATH = os.path.dirname(os.path.abspath(__file__))
-RESOURCES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "resources")
+RESOURCES_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '..', 'resources'
+)
+
 
 class RAG:
     def __init__(self):
-        self._splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=50)
-        embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-        self._store = Chroma(persist_directory=DB_PATH, embedding_function=embeddings)
+        self._splitter = RecursiveCharacterTextSplitter(
+            chunk_size=600, chunk_overlap=50
+        )
+        embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
+        self._store = Chroma(
+            persist_directory=DB_PATH, embedding_function=embeddings
+        )
         self._index_new_files()
 
     def _index_new_files(self):
         indexed = set(
-            m["source"]
-            for m in self._store.get(include=["metadatas"])["metadatas"]
-            if m and "source" in m
+            m['source']
+            for m in self._store.get(include=['metadatas'])['metadatas']
+            if m and 'source' in m
         )
 
         pages: List[Document] = []
@@ -39,5 +46,4 @@ class RAG:
 
     def search(self, question: str) -> str:
         docs = self._store.similarity_search(question, k=4)
-        return "\n".join([d.page_content for d in docs])
-
+        return '\n'.join([d.page_content for d in docs])

@@ -7,8 +7,11 @@ import memory.database as db
 
 # Event tools
 
+
 @tool
-def add_event_tool(title: str, start: str, duration: float, location: str, description: str) -> str:
+def add_event_tool(
+    title: str, start: str, duration: float, location: str, description: str
+) -> str:
     """Save a new calendar event to the database.
 
     Use whenever the user schedules, books, or mentions an upcoming event —
@@ -74,10 +77,11 @@ def delete_event_by_id_tool(id: int) -> str:
         Confirmation string that the event was deleted.
     """
     db.delete_event_by_id(id)
-    return f"Event {id} has been deleted."
+    return f'Event {id} has been deleted.'
 
 
 # User profile tools
+
 
 @tool
 def update_user_name_tool(name: str) -> str:
@@ -111,7 +115,7 @@ def update_user_birthdate_tool(birthdate: str) -> str:
         Confirmation string with the stored birthdate.
     """
     db.update_user_birthdate(birthdate)
-    return f"Birthdate updated to {birthdate}."
+    return f'Birthdate updated to {birthdate}.'
 
 
 @tool
@@ -128,8 +132,9 @@ def get_user_tool() -> str:
 
 # Grocery tools
 
+
 @tool
-def add_grocery_tool(text: str, amount: str = "1") -> str:
+def add_grocery_tool(text: str, amount: str = '1') -> str:
     """Add a single grocery item to the user's grocery / shopping list.
 
     Use when the user wants to remember to buy something.
@@ -176,7 +181,7 @@ def set_grocery_done_tool(id: int) -> str:
         Confirmation that the item was marked done.
     """
     db.update_grocery(id)
-    return f"Grocery item {id} marked as done."
+    return f'Grocery item {id} marked as done.'
 
 
 @tool
@@ -195,10 +200,11 @@ def remove_grocery_tool(id: int) -> str:
         Confirmation that the item was removed.
     """
     db.delete_grocery(id)
-    return f"Grocery item {id} removed."
+    return f'Grocery item {id} removed.'
 
 
 # Note tools
+
 
 @tool
 def add_note_tool(text: str) -> str:
@@ -215,7 +221,7 @@ def add_note_tool(text: str) -> str:
         Confirmation that the note was saved.
     """
     db.add_note(text)
-    return f"Note saved."
+    return f'Note saved.'
 
 
 @tool
@@ -248,7 +254,7 @@ def set_note_done_tool(id: int) -> str:
         Confirmation that the note was marked done.
     """
     db.update_notes(id)
-    return f"Note {id} marked as done."
+    return f'Note {id} marked as done.'
 
 
 @tool
@@ -267,7 +273,7 @@ def remove_note_tool(id: int) -> str:
         Confirmation that the note was deleted.
     """
     db.delete_note(id)
-    return f"Note {id} deleted."
+    return f'Note {id} deleted.'
 
 
 @tool
@@ -280,10 +286,10 @@ def delete_done_tool() -> str:
         Confirmation that all done items were cleared.
     """
     db.delete_done()
-    return "All completed items have been cleared."
+    return 'All completed items have been cleared.'
 
 
 def return_or_empty(value: list) -> str:
     if len(value) == 0:
-        return "No information stored."
+        return 'No information stored.'
     return str(value)
