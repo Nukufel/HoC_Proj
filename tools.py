@@ -10,7 +10,12 @@ import memory.database as db
 
 @tool
 def add_event_tool(
-    title: str, start: str, duration: float, location: str, description: str, reoccurring: bool
+    title: str,
+    start: str,
+    duration: float,
+    location: str,
+    description: str,
+    reoccurring: bool,
 ) -> str:
     """
     Save a new calendar event to the database.

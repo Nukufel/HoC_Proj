@@ -76,7 +76,7 @@ Die PIIMiddleware im Agent blockiert Nachrichten, die API-Keys oder andere sensi
 
 Warum gibt es kein Call/Rate limit? Ich glaube nicht, dass das für einen Personal-Assistant nötig ist.
 
-## Deployment
+## Setup/Deployment
 
 Der Telegram-Bot und der Agent laufen lokal.
 Der Bot wurde über BotFather erstellt, das offizielle Telegram-Tool zum Registrieren von Bots.

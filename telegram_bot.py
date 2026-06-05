@@ -49,14 +49,12 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     extracted = _image_handler.extract(image_bytes, text=caption)
     print(f'Vision extracted: {extracted}')
 
-    agent_instruction = (
-        """
+    agent_instruction = """
         Add every calendar event from the image analysis using the add_event tool. 
         Add every Note using the add_note tool.
         Add every grocery item using the add_grocery tool.
         Add each item separately. Do not skip any.
         """
-    )
     if caption:
         agent_instruction += f' The user\'s note: "{caption}"'
 
@@ -88,7 +86,9 @@ def main():
             send_morning_message, time=time(hour=7, minute=0, tzinfo=TZ)
         )
     except:
-        print('Failed to send morning message, no CHAT-ID. Write a Message first')
+        print(
+            'Failed to send morning message, no CHAT-ID. Write a Message first'
+        )
     try:
         app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
         app.add_handler(
