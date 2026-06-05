@@ -12,6 +12,7 @@
 | 6 | School every Thursday at 10 AM                                | Reoccurring flag set to 1       | Pass                     |
 | 7 | What's on my calendar today?                                  | Nothing                         | Pass                     |
 | 8 | All events                                                    | 4 Events                        | Pass                     |
+| 9 | Add an event for 31.06.2026 called Apple                      | Date does not exist             | Pass                     |
 
 
 ---
