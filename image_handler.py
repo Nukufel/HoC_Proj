@@ -1,5 +1,7 @@
 import base64
+from datetime import datetime
 from openai import OpenAI
+from agent import get_current_datetime
 
 
 class ImageHandler:
@@ -18,17 +20,32 @@ class ImageHandler:
         )
 
         prompt = (
-            'You are a calendar extraction assistant. Analyse the image and extract '
-            'every calendar event or appointment visible. '
-            'For each event return a structured entry with:\n'
-            '- Title\n'
-            '- Date (in YYYY-MM-DD format if determinable)\n'
-            '- Time (HH:MM 24h if visible)\n'
-            '- Duration or end time (if visible)\n'
-            '- Location (if visible)\n'
-            'List only events. Ignore groceries, tasks, notes, or any other content. '
-            'If no events are found, reply with "No events found."'
-            'Preserve original language. Be precise — do not paraphrase.'
+            f"""
+            {get_current_datetime()}
+            
+            You are a calendar extraction assistant. Analyse the image and extract every calendar event/appointment.
+            Check for weekday and calculate the date of the event if needed. 
+            If the event seams reoccurring say so.
+            For each event/appointment return a structured entry with:
+            - Title
+            - Date (in YYYY-MM-DD format if determinable)
+            - Time (HH:MM 24h if visible)
+            - Duration or end time (if visible)
+            - Location (if visible)
+            - Reoccurring
+            
+            You can also search for notes or groceries'
+            For each note return a structured entry with:
+            - Title
+            - Text
+            
+            For each grocery item return a structured entry with:
+            - Title
+            - Amount
+            - Notes
+            
+            Preserve original language. Be precise and do not paraphrase.
+            """
             + hint_suffix
         )
 

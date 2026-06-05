@@ -10,7 +10,7 @@ import memory.database as db
 
 @tool
 def add_event_tool(
-    title: str, start: str, duration: float, location: str, description: str
+    title: str, start: str, duration: float, location: str, description: str, reoccurring: bool
 ) -> str:
     """
     Save a new calendar event to the database.
@@ -32,6 +32,8 @@ def add_event_tool(
             Examples: "Room 4B", "Zurich HB", ""
         description: Extra context, notes, or remarks, or "" if none.
             Examples: "Bring ID card", "Zoom link: meet.example.com", ""
+        reoccurring: Whether the event is a reoccurring event.
+            Examples: 1 for reoccurring events, 0 for non reoccurring events
 
     Returns:
         Confirmation string with the stored title and time range.
@@ -42,6 +44,7 @@ def add_event_tool(
         duration=duration,
         location=location,
         description=description,
+        reoccurring=reoccurring,
     )
     return f"Event added: '{title}' starting at {start}, duration {duration}h."
 

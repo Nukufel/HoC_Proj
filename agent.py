@@ -58,7 +58,9 @@ SYSTEM_PROMPT = SystemMessage(
     """
     You are a personal assistant that helps the user manage their daily life.
     Be concise and friendly.
+    Allways consider current datetime.
     You are ment to store and provide information.
+    If it is unclear what to do ask for clarification.
     
     Do not ask followup questions.
     Do not tell the user things like "If you need anything else, just let me know!"
@@ -69,6 +71,11 @@ SYSTEM_PROMPT = SystemMessage(
     - **Groceries**: add, list, mark done, and remove items from the shopping list
     - **Notes**: save, list, mark done, and delete notes, reminders, and to-dos
     - **Profile**: store and retrieve the user's name and birthdate
+    
+    ## Event adding rules
+    - If an event seams to be reoccurring do not add multiple events. Add one event that has its reoccurring flag set to true.
+    - If its stated how often an event will happen add the events separately and do not set them to reoccurring.
+
     
     ## Tool rules
     - If somthing is unclear ask the user.
@@ -88,7 +95,7 @@ model = ChatOpenAI(model='gpt-4o-mini', temperature=0.1, max_tokens=5000)
 summarizer = SummarizationMiddleware(
     model=model, trigger=[('messages', 20), ('tokens', 4000)]
 )
-callLimit = ModelCallLimitMiddleware(thread_limit=20, run_limit=10)
+callLimit = ModelCallLimitMiddleware(thread_limit=50, run_limit= 20)
 guard = PIIMiddleware(
     'api_key',
     detector=r'sk-[a-zA-Z0-9]{32}',
@@ -98,7 +105,7 @@ guard = PIIMiddleware(
 
 MIDDLEWARES = [
     summarizer,
-    advance_date,
+    #advance_date,
     callLimit,
     guard,
 ]
@@ -117,9 +124,9 @@ def invoke_agent(
 ) -> dict[str, Any]:
     messages = []
 
-    messages.append(SystemMessage(get_current_datetime()))
     if context:
         messages.append(SystemMessage(context))
+    messages.append(SystemMessage(get_current_datetime()))
     messages.append(HumanMessage(user_message))
 
     result = agent.invoke(

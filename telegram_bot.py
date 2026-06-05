@@ -46,13 +46,16 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = update.message.caption or ''
 
     print('Analyzing image')
-
     extracted = _image_handler.extract(image_bytes, text=caption)
     print(f'Vision extracted: {extracted}')
 
     agent_instruction = (
-        'Add every calendar event from the image analysis below using the add_event tool. '
-        'Add each event separately. Do not skip any event.'
+        """
+        Add every calendar event from the image analysis using the add_event tool. 
+        Add every Note using the add_note tool.
+        Add every grocery item using the add_grocery tool.
+        Add each item separately. Do not skip any.
+        """
     )
     if caption:
         agent_instruction += f' The user\'s note: "{caption}"'
