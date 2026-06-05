@@ -11,7 +11,6 @@ from langchain.agents.middleware import (
     PIIMiddleware,
 )
 from datetime import datetime
-from dateparser.search import search_dates
 from memory.database import update_reoccurring_events
 
 
@@ -29,23 +28,6 @@ DAYS = [
 @before_model
 def advance_date(state, runtime):
     update_reoccurring_events()
-
-
-def sanitize_dates(text: str) -> str:
-    results = search_dates(
-        text,
-        settings={
-            'PREFER_DATES_FROM': 'future',
-            'RETURN_AS_TIMEZONE_AWARE': False,
-        },
-    )
-    if not results:
-        return text
-    for date_string, date_obj in results:
-        text = text.replace(
-            date_string, date_obj.strftime('%Y-%m-%d %H:%M'), 1
-        )
-    return text
 
 
 def get_current_datetime() -> str:
@@ -138,7 +120,7 @@ def invoke_agent(
     messages.append(SystemMessage(get_current_datetime()))
     if context:
         messages.append(SystemMessage(context))
-    messages.append(HumanMessage(sanitize_dates(user_message)))
+    messages.append(HumanMessage(user_message))
 
     result = agent.invoke(
         {'messages': messages},
