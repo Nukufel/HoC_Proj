@@ -12,7 +12,8 @@ import memory.database as db
 def add_event_tool(
     title: str, start: str, duration: float, location: str, description: str
 ) -> str:
-    """Save a new calendar event to the database.
+    """
+    Save a new calendar event to the database.
 
     Use whenever the user schedules, books, or mentions an upcoming event —
     including lectures, meetings, appointments, exams, deadlines, or social
@@ -47,7 +48,8 @@ def add_event_tool(
 
 @tool
 def get_events_tool() -> str:
-    """Return every calendar event in the database, regardless of date.
+    """
+    Return every calendar event in the database, regardless of date.
 
     Use when the user wants a full overview of all events, or when you need
     to browse events to find an ID before editing or deleting.
@@ -62,7 +64,8 @@ def get_events_tool() -> str:
 
 @tool
 def delete_event_by_id_tool(id: int) -> str:
-    """Permanently delete a calendar event from the database by its ID.
+    """
+    Permanently delete a calendar event from the database by its ID.
 
     Use when the user wants to remove or cancel a specific event.
     ALWAYS call search_event_tool or list_all_events_tool first to get the
@@ -102,7 +105,8 @@ def update_user_name_tool(name: str) -> str:
 
 @tool
 def update_user_birthdate_tool(birthdate: str) -> str:
-    """Store or update the user's date of birth in their profile.
+    """
+    Store or update the user's date of birth in their profile.
 
     Use when the user mentions or shares their birthday.
 
@@ -120,7 +124,8 @@ def update_user_birthdate_tool(birthdate: str) -> str:
 
 @tool
 def get_user_tool() -> str:
-    """Retrieve the user's name and birthdate.
+    """
+    Retrieve the user's name and birthdate.
 
     Use when you need the users name or birthdate.
 
@@ -135,7 +140,8 @@ def get_user_tool() -> str:
 
 @tool
 def add_grocery_tool(text: str, amount: str = '1') -> str:
-    """Add a single grocery item to the user's grocery / shopping list.
+    """
+    Add a single grocery item to the user's grocery / shopping list.
 
     Use when the user wants to remember to buy something.
     Call once per distinct item — do NOT combine multiple items into one call.
@@ -153,7 +159,8 @@ def add_grocery_tool(text: str, amount: str = '1') -> str:
 
 @tool
 def list_groceries_tool() -> str:
-    """Return all items on the grocery list.
+    """
+    Return all items on the grocery list.
 
     Use when the user asks what's on their shopping list, or when you need
     an item's ID before marking it done or deleting it.
@@ -167,7 +174,8 @@ def list_groceries_tool() -> str:
 
 @tool
 def set_grocery_done_tool(id: int) -> str:
-    """Mark a grocery item as purchased / done (soft-delete, record is kept).
+    """
+    Mark a grocery item as purchased / done (soft-delete, record is kept).
 
     Use when the user says they've bought a specific item.
     ALWAYS call list_groceries_tool first to get the correct ID.
@@ -186,7 +194,8 @@ def set_grocery_done_tool(id: int) -> str:
 
 @tool
 def remove_grocery_tool(id: int) -> str:
-    """Permanently delete a grocery item from the list.
+    """
+    Permanently delete a grocery item from the list.
 
     Use when the user explicitly wants to remove an item entirely (not just
     tick it off). ALWAYS call list_groceries_tool first to confirm the ID.
@@ -208,7 +217,8 @@ def remove_grocery_tool(id: int) -> str:
 
 @tool
 def add_note_tool(text: str) -> str:
-    """Save a new note or reminder to the user's notes list.
+    """
+    Save a new note or reminder to the user's notes list.
 
     Use for anything the user wants to remember that is not a calendar event
     or grocery item — tasks, ideas, to-dos, short memos.
@@ -226,7 +236,8 @@ def add_note_tool(text: str) -> str:
 
 @tool
 def list_notes_tool() -> str:
-    """Return all active (not yet completed) notes.
+    """
+    Return all active (not yet completed) notes.
 
     Use when the user asks to see their notes, tasks, or reminders, or when
     you need a note's ID before marking it done or deleting it.
@@ -240,7 +251,8 @@ def list_notes_tool() -> str:
 
 @tool
 def set_note_done_tool(id: int) -> str:
-    """Mark a note or task as completed (soft-delete, record is kept).
+    """
+    Mark a note or task as completed (soft-delete, record is kept).
 
     Use when the user says they've finished a task or reminder.
     ALWAYS call list_notes_tool first to find the correct ID.
@@ -259,7 +271,8 @@ def set_note_done_tool(id: int) -> str:
 
 @tool
 def remove_note_tool(id: int) -> str:
-    """Permanently delete a note from the database.
+    """
+    Permanently delete a note from the database.
 
     Use when the user explicitly wants a note gone entirely, not just ticked
     off. ALWAYS call list_notes_tool first to confirm the ID.
@@ -278,7 +291,8 @@ def remove_note_tool(id: int) -> str:
 
 @tool
 def delete_done_tool() -> str:
-    """Permanently remove ALL items marked as done from groceries and notes.
+    """
+    Permanently remove ALL items marked as done from groceries and notes.
 
     Use when the user wants to clean up completed items across all lists.
 

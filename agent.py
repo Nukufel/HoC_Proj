@@ -25,7 +25,6 @@ DAYS = [
     'Sunday',
 ]
 
-THREAD_ID = '1'
 
 @before_model
 def advance_date(state, runtime):
@@ -75,31 +74,31 @@ TOOLS = [
 
 SYSTEM_PROMPT = SystemMessage(
     """
-You are a personal assistant that helps the user manage their daily life.
-Be concise and friendly.
-You are ment to store and provide information.
-
-Do not ask followup questions.
-Do not tell the user things like "If you need anything else, just let me know!"
-Do not provide unnecessary information.
-
-## Capabilities
-- **Calendar**: add, list, and delete events (meetings, appointments, lectures, deadlines)
-- **Groceries**: add, list, mark done, and remove items from the shopping list
-- **Notes**: save, list, mark done, and delete notes, reminders, and to-dos
-- **Profile**: store and retrieve the user's name and birthdate
-
-## Tool rules
-- If somthing is unclear ask the user.
-- Always call a tool to retrieve data before answering questions about it — never guess.
-- To delete or update any item, first call the relevant list/get tool to find the correct ID.
-- Never invent or assume an ID.
-- If the user mentions their name or birthdate, save it immediately with the appropriate tool.
-- If the user describes an upcoming event, save it immediately with add_event_tool.
-- If something belongs on the grocery list or in notes, save it proactively without being asked.
-- If a tool returns no data, tell the user — do not fabricate information.
-- You may call multiple tools in sequence to complete a single request.
-"""
+    You are a personal assistant that helps the user manage their daily life.
+    Be concise and friendly.
+    You are ment to store and provide information.
+    
+    Do not ask followup questions.
+    Do not tell the user things like "If you need anything else, just let me know!"
+    Do not provide unnecessary information.
+    
+    ## Capabilities
+    - **Calendar**: add, list, and delete events (meetings, appointments, lectures, deadlines)
+    - **Groceries**: add, list, mark done, and remove items from the shopping list
+    - **Notes**: save, list, mark done, and delete notes, reminders, and to-dos
+    - **Profile**: store and retrieve the user's name and birthdate
+    
+    ## Tool rules
+    - If somthing is unclear ask the user.
+    - Always call a tool to retrieve data before answering questions about it — never guess.
+    - To delete or update any item, first call the relevant list/get tool to find the correct ID.
+    - Never invent or assume an ID.
+    - If the user mentions their name or birthdate, save it immediately with the appropriate tool.
+    - If the user describes an upcoming event, save it immediately with add_event_tool.
+    - If something belongs on the grocery list or in notes, save it proactively without being asked.
+    - If a tool returns no data, tell the user — do not fabricate information.
+    - You may call multiple tools in sequence to complete a single request.
+    """
 )
 
 model = ChatOpenAI(model='gpt-4o-mini', temperature=0.1, max_tokens=5000)
@@ -143,6 +142,6 @@ def invoke_agent(
 
     result = agent.invoke(
         {'messages': messages},
-        {'configurable': {'thread_id': THREAD_ID, 'use_rag': use_rag}},
+        {'configurable': {'thread_id': 0, 'use_rag': use_rag}},
     )
     return result

@@ -3,24 +3,12 @@ from openai import OpenAI
 
 
 class ImageHandler:
-    """Handles vision-based extraction of structured data from images."""
-
-    VISION_MODEL = 'gpt-4o-mini'
+    """Handles image analasyls."""
 
     def __init__(self):
         self._client = OpenAI()
 
     def extract(self, image_bytes: bytes, text: str = '') -> str:
-        """
-        Send *image_bytes* to the vision model and return the extracted text.
-
-        Args:
-            image_bytes: Raw image bytes (JPEG or PNG).
-            text:   Optional caption / note the user attached to the image.
-
-        Returns:
-            A structured string with labelled categories (EVENTS, TASKS, etc.).
-        """
         b64_image = base64.b64encode(image_bytes).decode('utf-8')
 
         hint_suffix = (
@@ -45,7 +33,7 @@ class ImageHandler:
         )
 
         response = self._client.chat.completions.create(
-            model=self.VISION_MODEL,
+            model='gpt-4o-mini',
             messages=[
                 {
                     'role': 'user',
