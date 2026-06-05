@@ -18,7 +18,7 @@ _image_handler = ImageHandler()
 
 def get_chat_id(update: Update):
     global CHAT_ID
-    if CHAT_ID is None or CHAT_ID != update.message.chat_id:
+    if CHAT_ID is None:
         CHAT_ID = update.effective_chat.id
         with open('.env', 'a') as f:
             f.write(f'\nCHAT_ID={CHAT_ID}')
@@ -83,14 +83,19 @@ async def send_morning_message(context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = Application.builder().token(TOKEN).build()
 
-    app.job_queue.run_daily(
-        send_morning_message, time=time(hour=7, minute=0, tzinfo=TZ)
-    )
-
-    app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
-    app.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
-    )
+    try:
+        app.job_queue.run_daily(
+            send_morning_message, time=time(hour=7, minute=0, tzinfo=TZ)
+        )
+    except:
+        print('Failed to send morning message, no CHAT-ID. Write a Message first')
+    try:
+        app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+        app.add_handler(
+            MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
+        )
+    except:
+        print('Failed to handle input.')
 
     print('Telegram bot running...')
     app.run_polling()

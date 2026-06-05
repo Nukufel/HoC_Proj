@@ -46,11 +46,6 @@ extrahiert der Image handler die relevanten Informationen und strukturiert diese
 Die strukturierte Informationen werden dann an den Agent übergeben.
 Der Agent speichert die Informationen anschliessend automatisch in der Datenbank indem er die passenden Tools.
 
-### Probleme
-Beim Testen zeigte sich ein Bug: Events die per Bild erfasst wurden, hatten oft ein falsches Datum. 
-Ich hatte vergessen, dass das aktuelle Datum nicht an den Vision-Prompt übergeben wurde. 
-Relative Angaben im Bild wie „Montag" konnten deshalb nicht korrekt interpretiert werden.
-
 ## RAG (entfernt)
 Ursprünglich war die Bildanalyse eine RAG-Middleware. Man konnte PDF über den Chat hochladen. 
 Allerdings ist es mir nicht gelungen strukturierte Daten daraus zu bekommen. Ein weiterer grund für die änderung war,
@@ -62,6 +57,17 @@ Die Manuellen Tests sollen der Reihenfolge nach ausgeführt werden.
 Ich teste Manuel um zu sehen ob die Applikation richtig funktioniert.
 Zudem habe ich mir von Claude ein paar Unit-Tests für die Tools schreiben lasse. 
 Ich habe mir nicht viel mühe mit den Unit-Test gegeben da ich zuerst Manuel Getestet habe.
+
+## Probleme (gross)
+1.  Beim Testen zeigte sich ein Bug: Events die per Bild erfasst wurden, hatten oft ein falsches Datum.
+    Ich hatte vergessen, dass das aktuelle Datum nicht an den Vision-Prompt übergeben wurde. 
+    Relative Angaben im Bild wie „Montag" konnten deshalb nicht korrekt interpretiert werden.
+2. Beim hinzufügen von einem Event ist es oft nicht ganz klar ob dies wiederkehrend ist. 
+   Dafür, habe ich leider keine lösung gefunden.
+3. Ich habe lange gebraucht bis ich den 'daly-job' für die "Good-Morning-Message" aufgesetzt hatte. 
+   Mir hat die Chat-ID gefehlt und mir war nicht klar wie ich an dir herankomme.
+   Schlussendlich habe ich herausgefunden das es erst eine Nachricht von Telegram braucht um die ID zu erhalten. 
+   Die Chat-ID wird in einem .env File gespeichert.
 
 ## Security
 
