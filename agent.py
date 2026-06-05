@@ -95,7 +95,7 @@ model = ChatOpenAI(model='gpt-4o-mini', temperature=0.1, max_tokens=5000)
 summarizer = SummarizationMiddleware(
     model=model, trigger=[('messages', 20), ('tokens', 4000)]
 )
-callLimit = ModelCallLimitMiddleware(thread_limit=50, run_limit= 20)
+callLimit = ModelCallLimitMiddleware(run_limit=10)
 guard = PIIMiddleware(
     'api_key',
     detector=r'sk-[a-zA-Z0-9]{32}',

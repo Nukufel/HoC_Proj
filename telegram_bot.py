@@ -84,7 +84,7 @@ def main():
     app = Application.builder().token(TOKEN).build()
 
     app.job_queue.run_daily(
-        send_morning_message, time=time(hour=10, minute=12, tzinfo=TZ)
+        send_morning_message, time=time(hour=7, minute=0, tzinfo=TZ)
     )
 
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
