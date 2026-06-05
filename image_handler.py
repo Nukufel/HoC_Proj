@@ -10,13 +10,13 @@ class ImageHandler:
     def __init__(self):
         self._client = OpenAI()
 
-    def extract(self, image_bytes: bytes, user_hint: str = '') -> str:
+    def extract(self, image_bytes: bytes, text: str = '') -> str:
         """
         Send *image_bytes* to the vision model and return the extracted text.
 
         Args:
             image_bytes: Raw image bytes (JPEG or PNG).
-            user_hint:   Optional caption / note the user attached to the image.
+            text:   Optional caption / note the user attached to the image.
 
         Returns:
             A structured string with labelled categories (EVENTS, TASKS, etc.).
@@ -24,20 +24,22 @@ class ImageHandler:
         b64_image = base64.b64encode(image_bytes).decode('utf-8')
 
         hint_suffix = (
-            f'\n\nThe user added this note with the image: "{user_hint}"'
-            if user_hint
+            f'\n\nThe user added this note with the image: "{text}"'
+            if text
             else ''
         )
 
         prompt = (
-            'You are a data-extraction assistant. Carefully read the image and extract '
-            'every piece of actionable information. Return a structured list with '
-            'clearly labelled categories:\n'
-            '- EVENTS: date, time, title, location (if visible)\n'
-            '- TASKS / TO-DOs: exact wording of each task\n'
-            '- GROCERY ITEMS: each item with quantity if shown\n'
-            '- NOTES / REMINDERS: verbatim text\n'
-            'If a category has no items, omit it. '
+            'You are a calendar extraction assistant. Analyse the image and extract '
+            'every calendar event or appointment visible. '
+            'For each event return a structured entry with:\n'
+            '- Title\n'
+            '- Date (in YYYY-MM-DD format if determinable)\n'
+            '- Time (HH:MM 24h if visible)\n'
+            '- Duration or end time (if visible)\n'
+            '- Location (if visible)\n'
+            'List only events. Ignore groceries, tasks, notes, or any other content. '
+            'If no events are found, reply with "No events found."'
             'Preserve original language. Be precise — do not paraphrase.'
             + hint_suffix
         )
