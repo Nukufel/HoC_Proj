@@ -20,7 +20,7 @@ Täglich um 07:00 Uhr sendet der Bot automatisch eine Morgennachricht mit den an
 Eine Middleware-Pipeline verarbeitet die Anfrage:
 - **SummarizationMiddleware** fasst den Chatverlauf zusammen, sobald er zu lang wird, um den Kontext im Rahmen zu halten.
 - **ModelCallLimitMiddleware** begrenzt die Anzahl Tool-Aufrufe des Agents um nicht in einem Loop stecken zu bleiben.
-- **PIIMiddleware** blockiert sensible Nachrichten. Solche die API-Keys enthalten oder auch sensitive Nutzer Daten enthalten werden geblockt.
+- **PIIMiddleware** blockiert sensible Nachrichten.
 - **advance_date** Ein before_model-Hook aktualisiert vor jedem LLM-Aufruf wiederkehrende Events, wenn ihr Datum in der Vergangenheit liegt. 
 Ihr Datum wird dann um sieben Tage nach hinten geschoben.
 
@@ -63,14 +63,19 @@ Ich teste Manuel um zu sehen ob die Applikation richtig funktioniert.
 Zudem habe ich mir von Claude ein paar Unit-Tests für die Tools schreiben lasse. 
 Ich habe mir nicht viel mühe mit den Unit-Test gegeben da ich zuerst Manuel Getestet habe.
 
+## Security
+
+Sowohl der OpenAI-API-Key als auch der Telegram-API-Key werden in Umgebungsvariablen gespeichert und sind im Code selbst nie sichtbar.
+Die PIIMiddleware im Agent blockiert Nachrichten, die API-Keys oder andere sensitiven Daten enthalten, bevor sie das Modell erreichen.
+
+Warum gibt es kein Call/Rate limit? Ich glaube nicht, dass das für einen Personal-Assistant nötig ist.
+
 ## Deployment
 
 Der Telegram-Bot und der Agent laufen lokal.
-Der Bot wurde über BotFather erstellt das offizielle Telegram-Tool zum Registrieren von Bots.
-Hir habe ich auch meine API-Token her.
-Für Anfragen an das LLM wird Langhains OpenAI wrapper benutzt. 
-Sowohl der OpenAI-API-Key als auch der Telegram-API-Key werden in den Umgebungsvariablen gespeichert und sind im Code selbst nie sichtbar.
-Als LLM benutze ich OpenAI's GPT-4o-mini für Text und auch Bildanalyse.
+Der Bot wurde über BotFather erstellt, das offizielle Telegram-Tool zum Registrieren von Bots.
+Für Anfragen an das LLM wird LangChains OpenAI-Wrapper benutzt.
+Als LLM wird OpenAI's GPT-4o-mini für Text und Bildanalyse verwendet.
 
 Der Telegram Bot muss beim ersten Mal mit "/start" im Telegram-Chat selbst gestartet werden.
 Die App kann dann durch Ausführen von `telegram_bot.py` gestartet werden.
