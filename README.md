@@ -79,3 +79,7 @@ Als LLM wird OpenAI's GPT-4o-mini für Text und Bildanalyse verwendet.
 
 Der Telegram Bot muss beim ersten Mal mit "/start" im Telegram-Chat selbst gestartet werden.
 Die App kann dann durch Ausführen von `telegram_bot.py` gestartet werden.
+
+## Erweiterungs-Möglichkeiten
+Wie schon in der Präsentation gesagt währ das hochladen von Quittungen cool. Damit könnten dan gekaufte sachen aus der Einkaufsliste gelöscht werden.
+Auch hatte ich überlegt die Stundenplan API zu benutzen bin aber nicht mehr dazu gekommen.
