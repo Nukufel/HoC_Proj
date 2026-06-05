@@ -105,7 +105,7 @@ guard = PIIMiddleware(
 
 MIDDLEWARES = [
     summarizer,
-    #advance_date,
+    advance_date,
     callLimit,
     guard,
 ]

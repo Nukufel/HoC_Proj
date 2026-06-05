@@ -60,6 +60,8 @@
 | 1 | Add milk and also schedule a gym session tomorrow at 7am | Milk added + gym event created         | Pass      |
 | 2 | delete it                                                | Asks for clarification                 | Pass      |
 | 4 | Summarize everything I have going on                     | Overview of calendar, groceries, notes | Pass      |
+| 5 | Reoccurring event at 01.06.2026 10 AM called Wuf         | Date gets advanced to 08.06.2026       | Pass      |
+
 
 ---
 
